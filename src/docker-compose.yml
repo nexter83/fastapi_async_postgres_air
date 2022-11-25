@@ -1,0 +1,54 @@
+version: '3.1'
+
+volumes:
+  postgres_pg_air:
+
+
+services:
+#  postgres db
+  pg_db:
+    container_name: "pg_db"
+    env_file: .env
+    image: postgres:14.6
+    restart: always
+    volumes:
+      - ~/postgres/air:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - custom
+
+#application
+  app_async:
+    container_name: "app_async"
+    image: app
+    env_file: .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - custom
+    depends_on:
+      - pg_db
+
+#  nginx
+  web:
+    container_name: "web"
+    image: nginx:alpine
+    depends_on:
+      - app_async
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d
+    networks:
+      - custom
+
+
+
+networks:
+  custom:
+    driver: bridge
