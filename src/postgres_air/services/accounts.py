@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from fastapi_pagination import paginate
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, HTTPException, status, Response
@@ -22,18 +22,14 @@ class AccountServices:
 
     async def get_accounts(
         self,
-        page: int = None,
-        page_size: int = None,
         order_column=None,
         is_desc: bool = False,
     ):
         result = await self.session.execute(
             select(Account)
-            .offset(page)
-            .limit(page_size)
             .order_by(desc(order_column) if is_desc else order_column)
         )
-        return result.scalars().all()
+        return paginate(result.scalars().all())
 
     async def get_account(self, account_id: int):
         res = await self._get_account(account_id)

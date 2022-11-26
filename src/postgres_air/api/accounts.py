@@ -3,6 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, status, Response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi_pagination import LimitOffsetPage, add_pagination
 from ..services.accounts import AccountServices
 from ..schemas.accounts import (
     AccountSchemaBase,
@@ -23,17 +24,15 @@ allow_read_resource = RoleChecker(["admin", "user"])
 @router.get(
     "/",
     status_code=status.HTTP_200_OK,
-    response_model=List[AccountOutSchema],
+    response_model=LimitOffsetPage[AccountOutSchema],
     dependencies=[Depends(allow_read_resource)],
 )
 async def get_accounts(
     service: AccountServices = Depends(),
-    page: int = 0,
-    page_size: int = 100,
     order_column=None,
     is_desc: bool = False,
 ) -> dict:
-    res = await service.get_accounts(page, page_size, order_column, is_desc)
+    res = await service.get_accounts(order_column, is_desc)
     return res
 
 
@@ -78,3 +77,5 @@ async def delete_account(
     account_id: int, service: AccountServices = Depends()
 ) -> Response:
     return await service.delete_account(account_id)
+
+add_pagination(router)
