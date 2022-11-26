@@ -50,7 +50,7 @@ async def get_account(account_id: int, service: AccountServices = Depends()) -> 
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    response_model=AccountSchemaBase,
+    response_model=AccountOutSchema,
     dependencies=[Depends(allow_create_resource)],
 )
 async def create_account(

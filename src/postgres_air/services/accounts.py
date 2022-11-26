@@ -36,6 +36,7 @@ class AccountServices:
         new_account = Account(**account.dict())
         self.session.add(new_account)
         await self.session.commit()
+        await self.session.refresh(new_account)
         return new_account
 
     async def update_account(self, account_id: int, account):
