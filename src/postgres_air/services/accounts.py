@@ -12,13 +12,14 @@ class AccountServices:
     def __init__(self, session: AsyncSession = Depends(get_async_session)):
         self.session = session
 
-    async def _get_account(self, account_id: int):
+    async def get_account(self, account_id: int):
         result = await self.session.execute(
             select(Account).where(Account.account_id == account_id)
         )
-        if not result:
+        data = result.scalars().first()
+        if not data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-        return result
+        return data
 
     async def get_accounts(
         self,
@@ -31,9 +32,7 @@ class AccountServices:
         )
         return paginate(result.scalars().all())
 
-    async def get_account(self, account_id: int):
-        res = await self._get_account(account_id)
-        return res.scalars().first()
+
 
     async def create_account(self, account):
         new_account = Account(**account.dict())
