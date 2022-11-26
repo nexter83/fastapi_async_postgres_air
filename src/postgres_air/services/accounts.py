@@ -22,17 +22,15 @@ class AccountServices:
         return data
 
     async def get_accounts(
-        self,
-        order_column=None,
-        is_desc: bool = False,
+            self,
+            order_column=None,
+            is_desc: bool = False,
     ):
         result = await self.session.execute(
             select(Account)
             .order_by(desc(order_column) if is_desc else order_column)
         )
         return paginate(result.scalars().all())
-
-
 
     async def create_account(self, account):
         new_account = Account(**account.dict())
