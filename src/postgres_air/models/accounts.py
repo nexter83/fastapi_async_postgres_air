@@ -14,6 +14,3 @@ class Account(Base):
     last_name = Column(String)
     frequent_flyer_id = Column(Integer)
     update_ts = Column(TIMESTAMP(timezone=True))
-
-
-

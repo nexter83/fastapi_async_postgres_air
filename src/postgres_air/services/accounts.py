@@ -53,9 +53,8 @@ class AccountServices:
         return await self.get_account(account_id)
 
     async def delete_account(self, account_id: int):
-        upd_account = delete(Account).where(Account.account_id == account_id)
-        upd_account.execution_options(synchronize_session="fetch")
-
-        await self.session.execute(upd_account)
+        del_account = delete(Account).where(Account.account_id == account_id)
+        del_account.execution_options(synchronize_session="fetch")
+        await self.session.execute(del_account)
         await self.session.commit()
         return Response(status_code=status.HTTP_204_NO_CONTENT)
